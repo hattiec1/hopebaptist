@@ -54,28 +54,28 @@ h1{font-size:21px;font-weight:600;margin:0 0 6px}
 </div>
 
 <div class="wrap" id="main">
-  <h1>Hello Deacon Owusu</h1>
+  <h1 id="hi">Hello</h1>
   <p class="lede">You've been asked to visit someone the team met on the last outreach.</p>
 
   <div class="who">
-    <p class="nm">Ama Boateng</p>
-    <span class="tag">Received Christ &#183; 31 August</span>
-    <div class="line"><span>&#9678;</span><span>Kaneshie &#8212; near the market junction</span></div>
-    <div class="line"><span>&#9786;</span><span>Woman, 50&#8211;64, speaks Twi</span></div>
-    <div class="line"><span>&#9993;</span><span>Met by Mensah &amp; Owusu</span></div>
-    <a class="call" href="tel:0248874412">Call 024 887 4412</a>
+    <p class="nm" id="pn"></p>
+    <span class="tag" id="pt"></span>
+    <div class="line"><span>&#9678;</span><span id="pa"></span></div>
+    <div class="line"><span>&#9786;</span><span id="pd"></span></div>
+    <div class="line"><span>&#9993;</span><span id="pm"></span></div>
+    <a class="call" id="pc"></a>
   </div>
 
-  <div class="note">
+  <div class="note" id="pnote">
     <p class="lab">What the team wrote</p>
-    <p>Husband is sick. Said we could come back Saturday morning.</p>
+    <p id="pnt"></p>
   </div>
 
   <p class="q">How did it go?</p>
   <p class="qs">Tap one when you've been. The church will see it straight away.</p>
 
-  <button class="opt" onclick="finish('visited')"><b>I visited her</b><small>The church will mark this as done</small></button>
-  <button class="opt" onclick="finish('reach')"><b>I couldn't reach her</b><small>Wrong number, or nobody home</small></button>
+  <button class="opt" onclick="finish('visited')"><b id="o1">I visited them</b><small>The church will mark this as done</small></button>
+  <button class="opt" onclick="finish('reach')"><b id="o2">I couldn't reach them</b><small>Wrong number, or nobody home</small></button>
   <button class="opt" onclick="finish('again')"><b>I need to go back</b><small>Started, but not finished</small></button>
   <button class="opt" onclick="finish('someone')"><b>Someone else should go</b><small>Sends it back to the church to reassign</small></button>
 
@@ -91,9 +91,34 @@ h1{font-size:21px;font-weight:600;margin:0 0 6px}
 </div>
 
 <script>
+var REC={
+ 1:{n:"Ama Boateng",ph:"024 887 4412",tag:"Received Christ \u00b7 31 August",area:"Kaneshie \u2014 near the market junction",dem:"Woman, 50\u201364, speaks Twi",team:"Met by Mensah & Owusu",note:"Husband is sick. Said we could come back Saturday morning.",her:true},
+ 2:{n:"Kwame Asare",ph:"055 210 9876",tag:"Wants a visit \u00b7 31 August",area:"Odorkor",dem:"Man, 30\u201339, speaks Twi",team:"Met by Adjei & Tetteh",note:"Works nights. Asked about the children's programme. Best after 4pm.",her:false},
+ 3:{n:"Name not captured",ph:"",tag:"Prayer request \u00b7 31 August",area:"Kaneshie \u2014 lorry station",dem:"Woman, 40\u201349, speaks Ga",team:"Met by Mensah & Owusu",note:"Sells near the lorry station. Prayer for her daughter's exams. No number taken.",her:true},
+ 9:{n:"Peter Nyarko",ph:"026 550 7781",tag:"Wants a visit \u00b7 22 June",area:"Nima",dem:"Man, 50\u201364, speaks Ewe",team:"Met by Larbi & Opoku",note:"Assigned in June, still no visit recorded.",her:false}};
+
+(function(){
+  var q=new URLSearchParams(location.search);
+  var to=q.get('to')||'there';
+  var r=REC[q.get('id')]||REC[1];
+  var him=r.her?'her':'him';
+  document.getElementById('hi').textContent='Hello '+to;
+  document.getElementById('pn').textContent=r.n;
+  document.getElementById('pt').textContent=r.tag;
+  document.getElementById('pa').textContent=r.area;
+  document.getElementById('pd').textContent=r.dem;
+  document.getElementById('pm').textContent=r.team;
+  var c=document.getElementById('pc');
+  if(r.ph){c.href='tel:'+r.ph.replace(/\s/g,'');c.textContent='Call '+r.ph}
+  else{c.style.display='none'}
+  document.getElementById('pnt').textContent=r.note;
+  document.getElementById('o1').textContent='I visited '+him;
+  document.getElementById('o2').textContent="I couldn't reach "+him;
+})();
+
 var MSG={
  visited:["Thank you","The church has been told the visit is done. God bless you for going."],
- reach:["Noted","The church knows you couldn't reach her. They'll try another way."],
+ reach:["Noted","The church knows you couldn't reach them. They'll try another way."],
  again:["Noted","It stays on the list so nobody forgets to go back."],
  someone:["Sent back","The church will assign someone else to go."]
 };

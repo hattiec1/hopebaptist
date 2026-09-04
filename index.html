@@ -448,10 +448,10 @@ function outreach(){
 
   $('oSent').innerHTML=sent?`
     <div class="card" style="padding:16px;margin-bottom:20px">
-      <p class="eyebrow" style="margin-bottom:10px">Send this to ${esc(sent)} on WhatsApp</p>
+      <p class="eyebrow" style="margin-bottom:10px">Send this to ${esc(sent.who)} on WhatsApp</p>
       <div class="msgbox">
-        <p>Hello ${esc(sent.replace('The team who met them','team'))}. You have a follow-up visit from the last outreach. Tap here to see the details and tell us how it went:</p>
-        <p class="url"><a href="https://hattiec1.github.io/hopebaptist/visit.html" target="_blank" rel="noopener" style="color:var(--navy)">hattiec1.github.io/hopebaptist/visit.html</a></p>
+        <p>Hello ${esc(sent.who.replace('The team who met them','team'))}. You have a follow-up visit from the last outreach. Tap here to see the details and tell us how it went:</p>
+        <p class="url"><a href="${visitURL(sent)}" target="_blank" rel="noopener" style="color:var(--navy)">${visitURL(sent).replace('https://','')}</a></p>
       </div>
       <div class="row" style="margin:0">
         <button class="chip primary" onclick="shVisit(this)">Share</button>
@@ -466,7 +466,7 @@ function outreach(){
   $('oCov').innerHTML=areas.map(a=>`<div class="cov"><span>${esc(a.a)}</span><div class="track"><div style="width:${Math.round(a.n/mx*100)}%"></div></div><span>${a.n}</span></div>`).join('');
 }
 function openAssign(id){assignFor=assignFor===id?null:id;outreach()}
-function doAssign(id,who){const r=ENC.find(x=>x.id===id);r.who=who;r.stage="Assigned";assignFor=null;sent=who;outreach();home()}
+function doAssign(id,who){const r=ENC.find(x=>x.id===id);r.who=who;r.stage="Assigned";assignFor=null;sent={who:who,id:id};outreach();home()}
 function cycle(id){const r=ENC.find(x=>x.id===id);r.stage=STAGES[(STAGES.indexOf(r.stage)+1)%STAGES.length];outreach();home()}
 $('oRange').onchange=outreach;$('oStage').onchange=outreach;$('oq').oninput=outreach;
 
@@ -513,7 +513,7 @@ function sh(i,btn){
   }
 }
 function shVisit(btn){
-  const text="Hello. You have a follow-up visit from the last outreach. Tap here to see the details and tell us how it went:\n\nhttps://hattiec1.github.io/hopebaptist/visit.html";
+  const text=visitMsg(sent);
   if(navigator.share){navigator.share({title:"Hope Baptist Church",text:text}).catch(()=>{})}
   else{copyText(text); flash(btn,"Copied")}
 }
@@ -522,8 +522,10 @@ function copyText(t){
   else fallback(t);
   function fallback(x){const ta=document.createElement('textarea');ta.value=x;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta)}
 }
+function visitURL(x){return "https://hattiec1.github.io/hopebaptist/visit.html?to="+encodeURIComponent(x.who.replace('The team who met them','team'))+"&id="+x.id}
+function visitMsg(x){return "Hello "+x.who.replace('The team who met them','team')+". You have a follow-up visit from the last outreach. Tap here to see the details and tell us how it went:\n\n"+visitURL(x)}
 function cpVisit(btn){
-  const t="Hello. You have a follow-up visit from the last outreach. Tap here to see the details and tell us how it went:\n\nhttps://hattiec1.github.io/hopebaptist/visit.html";
+  const t=visitMsg(sent);
   const was=btn.textContent, done=()=>{btn.textContent="Copied";setTimeout(()=>btn.textContent=was,1800)};
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(()=>done())}else{done()}
 }
