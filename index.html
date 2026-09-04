@@ -99,6 +99,8 @@ select,.btn{height:38px;padding:0 12px;border:1px solid #d6d3d1;border-radius:9p
 .btn:active{background:#f5f5f4}
 .chip{font-size:12px;padding:6px 12px;border:1px solid #d6d3d1;border-radius:9px;background:#fff;color:var(--mid)}
 .chip:active{background:#f5f5f4}
+.chip.primary{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:600}
+.chip.primary:active{background:#152a49}
 .newlink{margin-left:auto;background:none;border:0;padding:6px 2px;font-size:12px;color:var(--faint);font-family:inherit;text-decoration:underline;white-space:nowrap}
 .newlink:active{color:var(--mid)}
 
@@ -220,9 +222,9 @@ select,.btn{height:38px;padding:0 12px;border:1px solid #d6d3d1;border-radius:9p
 </section>
 
 <!-- PEOPLE -->
-<section class="pane" data-pane="People">
+<section class="pane" data-pane="Membership">
   <div class="head">
-    <div><h1>People</h1><p class="sub">118 on record</p></div>
+    <div><h1>Membership</h1><p class="sub">118 on record</p></div>
     <button class="btn" onclick="alert('Downloads a spreadsheet of every member record.')">Export</button>
   </div>
   <div class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="pq" placeholder="Search name, area, ministry"></div>
@@ -304,7 +306,7 @@ const GB="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAAB4CAIAAAD5W6JVAAAo
 document.getElementById('hb1').src=HB;
 document.getElementById('gb1').src=GB;
 
-const TABS=["Home","People","Outreach","Sundays","Links"];
+const TABS=["Home","Membership","Outreach","Sundays","Links"];
 const STAGES=["Awaiting assignment","Assigned","Visit done","Couldn't reach","Now attending","Not interested"];
 const VISITORS=["Deacon Owusu","Deacon Tetteh","Sister Adjei","Sister Baffour","The team who met them"];
 
@@ -449,10 +451,11 @@ function outreach(){
       <p class="eyebrow" style="margin-bottom:10px">Send this to ${esc(sent)} on WhatsApp</p>
       <div class="msgbox">
         <p>Hello ${esc(sent.replace('The team who met them','team'))}. You have a follow-up visit from the last outreach. Tap here to see the details and tell us how it went:</p>
-        <p class="url">hopebaptist.amnicircle.com/visit/8f3a2c</p>
+        <p class="url"><a href="https://hattiec1.github.io/hopebaptist/visit.html" target="_blank" rel="noopener" style="color:var(--navy)">hattiec1.github.io/hopebaptist/visit.html</a></p>
       </div>
       <div class="row" style="margin:0">
-        <button class="chip" onclick="alert('Message and link copied.')">Copy message</button>
+        <button class="chip primary" onclick="shVisit(this)">Share</button>
+        <button class="chip" onclick="cpVisit(this)">Copy</button>
         <button class="chip" onclick="sent=null;outreach()">Close</button>
         <span style="font-size:11px;color:var(--faint)">No login needed. The link opens just this one visit.</span>
       </div>
@@ -491,12 +494,38 @@ function links(){
       <p class="lkw">${esc(l.w)}</p>
       ${l.msg?`<div class="sugg"><p class="lab">Message <span style="color:var(--faint)">— tap to edit</span></p><div class="txt" contenteditable="true" data-i="${i}" oninput="LINKS[${i}].msg=this.innerText" spellcheck="false">${esc(l.msg)}</div></div>`:''}
       <div class="row" style="margin:0;flex-wrap:nowrap;align-items:center">
-        <button class="chip" onclick="cp(${i},this)">${l.msg?'Copy message and link':'Copy link'}</button>
-        ${l.u.startsWith('http')?`<a class="chip" href="${esc(l.u)}" target="_blank" rel="noopener" style="text-decoration:none;display:inline-block">Open it</a>`:''}
+        <button class="chip primary" onclick="sh(${i},this)">Share</button>
+        <button class="chip" onclick="cp(${i},this)">Copy</button>
+        ${l.u.startsWith('http')?`<a class="chip" href="${esc(l.u)}" target="_blank" rel="noopener" style="text-decoration:none;display:inline-block">Open</a>`:''}
         <button class="newlink" onclick="if(confirm('Make a new link?\n\nThe old one stops working straight away, and anyone who still has it will need the new one.')){alert('New link created. The old one no longer works.')}">New link</button>
       </div>
       <p style="font-size:11px;color:var(--faint);margin:10px 0 0">${esc(l.d)}</p>
     </div>`).join('');
+}
+function payload(i){const l=LINKS[i];return l.msg?l.msg+"\n\n"+l.u:l.u}
+function flash(btn,word){const was=btn.textContent;btn.textContent=word;setTimeout(()=>btn.textContent=was,1800)}
+function sh(i,btn){
+  const l=LINKS[i], text=payload(i);
+  if(navigator.share){
+    navigator.share({title:"Hope Baptist Church",text:text}).catch(()=>{});
+  }else{
+    copyText(text); flash(btn,"Copied — paste it in WhatsApp");
+  }
+}
+function shVisit(btn){
+  const text="Hello. You have a follow-up visit from the last outreach. Tap here to see the details and tell us how it went:\n\nhttps://hattiec1.github.io/hopebaptist/visit.html";
+  if(navigator.share){navigator.share({title:"Hope Baptist Church",text:text}).catch(()=>{})}
+  else{copyText(text); flash(btn,"Copied")}
+}
+function copyText(t){
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).catch(()=>fallback(t))}
+  else fallback(t);
+  function fallback(x){const ta=document.createElement('textarea');ta.value=x;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta)}
+}
+function cpVisit(btn){
+  const t="Hello. You have a follow-up visit from the last outreach. Tap here to see the details and tell us how it went:\n\nhttps://hattiec1.github.io/hopebaptist/visit.html";
+  const was=btn.textContent, done=()=>{btn.textContent="Copied";setTimeout(()=>btn.textContent=was,1800)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(()=>done())}else{done()}
 }
 function cp(i,btn){
   const l=LINKS[i], text=l.msg?l.msg+"\n\n"+l.u:l.u, was=btn.textContent;
