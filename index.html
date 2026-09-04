@@ -98,6 +98,8 @@ select,.btn{height:38px;padding:0 12px;border:1px solid #d6d3d1;border-radius:9p
 .btn:active{background:#f5f5f4}
 .chip{font-size:12px;padding:6px 12px;border:1px solid #d6d3d1;border-radius:9px;background:#fff;color:var(--mid)}
 .chip:active{background:#f5f5f4}
+.newlink{margin-left:auto;background:none;border:0;padding:6px 2px;font-size:12px;color:var(--faint);font-family:inherit;text-decoration:underline;white-space:nowrap}
+.newlink:active{color:var(--mid)}
 
 /* records */
 .rec{padding:14px 16px;border-bottom:1px solid var(--line2)}
@@ -157,7 +159,8 @@ select,.btn{height:38px;padding:0 12px;border:1px solid #d6d3d1;border-radius:9p
 .urlbox{background:#f5f5f4;border-radius:8px;padding:9px 11px;font-size:12px;color:var(--navy);word-break:break-all;margin:0 0 12px}
 .sugg{border:1px solid var(--line);border-radius:10px;padding:12px;margin:0 0 12px}
 .sugg .lab{font-size:11px;color:var(--faint);margin:0 0 6px}
-.sugg .txt{font-size:13px;color:var(--mid);margin:0;line-height:1.55}
+.sugg .txt{font-size:13px;color:var(--mid);margin:0;line-height:1.55;outline:none;border-radius:6px;padding:2px 4px;margin:0 -4px}
+.sugg .txt:focus{background:#fffbeb;box-shadow:0 0 0 2px #fde68a}
 
 .foot{margin:34px 0 0;padding:16px 0 0;border-top:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}
 .foot p{font-size:11px;color:var(--faint);margin:0}
@@ -485,18 +488,13 @@ function links(){
     <div class="lk">
       <p class="lkt">${esc(l.t)}</p>
       <p class="lkw">${esc(l.w)}</p>
-      ${l.og?`<div class="og">
-        <div class="ogh"><div class="crest"><img src="${HB}" alt=""></div><p>Hope Baptist Church</p></div>
-        <div class="ogm"><p class="t">${esc(l.og.t)}</p><p class="d">${esc(l.og.d)}</p><p class="u">${esc(l.u)}</p></div>
-      </div>`:`<div class="home"><div class="icn"><img src="${HB}" alt=""></div><div><p style="font-size:13px;margin:0">Sunday</p><p style="font-size:11px;color:var(--faint);margin:2px 0 0">How it looks saved to a home screen</p></div></div>`}
-      <div class="urlbox">${l.u.startsWith('http')?`<a href="${esc(l.u)}" target="_blank" rel="noopener" style="color:var(--navy)">${esc(l.u)}</a>`:esc(l.u)}</div>
-      ${l.msg?`<div class="sugg"><p class="lab">Suggested message</p><p class="txt">${esc(l.msg)}</p></div>`:''}
-      <div class="row" style="margin:0">
+      ${l.msg?`<div class="sugg"><p class="lab">Message <span style="color:var(--faint)">— tap to edit</span></p><div class="txt" contenteditable="true" data-i="${i}" oninput="LINKS[${i}].msg=this.innerText" spellcheck="false">${esc(l.msg)}</div></div>`:''}
+      <div class="row" style="margin:0;flex-wrap:nowrap;align-items:center">
         <button class="chip" onclick="cp(${i},this)">${l.msg?'Copy message and link':'Copy link'}</button>
         ${l.u.startsWith('http')?`<a class="chip" href="${esc(l.u)}" target="_blank" rel="noopener" style="text-decoration:none;display:inline-block">Open it</a>`:''}
-        <button class="chip" onclick="alert('Generates a new link. The old one stops working immediately.')">New link</button>
-        <span style="font-size:11px;color:var(--faint)">${esc(l.d)}</span>
+        <button class="newlink" onclick="if(confirm('Make a new link?\n\nThe old one stops working straight away, and anyone who still has it will need the new one.')){alert('New link created. The old one no longer works.')}">New link</button>
       </div>
+      <p style="font-size:11px;color:var(--faint);margin:10px 0 0">${esc(l.d)}</p>
     </div>`).join('');
 }
 function cp(i,btn){
