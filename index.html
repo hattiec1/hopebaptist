@@ -9,13 +9,13 @@
 <meta property="og:title" content="Let&#39;s stay connected">
 <meta property="og:description" content="Share your details so we can reach you, pray for you, and remember your family.">
 <!-- REPLACE both URLs below with the full https:// address of og-member-form.png once uploaded -->
-<meta property="og:image" content="https://hattiec1.github.io/hopebaptist/og-member-form.png">
+<meta property="og:image" content="https://REPLACE-ME/og-member-form.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Let&#39;s stay connected">
 <meta name="twitter:description" content="Share your details so we can reach you, pray for you, and remember your family.">
-<meta name="twitter:image" content="https://hattiec1.github.io/hopebaptist/og-member-form.png">
+<meta name="twitter:image" content="https://REPLACE-ME/og-member-form.png">
 <style>
 :root{
   --navy:#1B365D; --red:#C8102E;
@@ -338,7 +338,7 @@ const SUNDAYS=[
 {d:"27 Jul",m:31,f:52,c:20,l:"13 of 16"}];
 
 const LINKS=[
-{t:"Member details",u:"hopebaptist.amnicircle.com/join",w:"Pastor sends it",d:"Main church chat, and each ministry chat",
+{t:"Member details",u:"https://hattiec1.github.io/hopebaptist/join.html",w:"Pastor sends it",d:"Main church chat, and each ministry chat",
  og:{t:"Let's stay connected",d:"Share your details so we can reach you, pray for you, and remember your family."},
  msg:"Good evening church. We are putting our records in order so that we can care for you better — reach you when you need us, pray with you, and remember your family. Please tap the link and share your details. It takes about one minute. God bless you."},
 {t:"Outreach capture",u:"hopebaptist.amnicircle.com/outreach",w:"Evangelism pastor sends it",d:"Outreach chat, morning of",
@@ -489,10 +489,11 @@ function links(){
         <div class="ogh"><div class="crest"><img src="${HB}" alt=""></div><p>Hope Baptist Church</p></div>
         <div class="ogm"><p class="t">${esc(l.og.t)}</p><p class="d">${esc(l.og.d)}</p><p class="u">${esc(l.u)}</p></div>
       </div>`:`<div class="home"><div class="icn"><img src="${HB}" alt=""></div><div><p style="font-size:13px;margin:0">Sunday</p><p style="font-size:11px;color:var(--faint);margin:2px 0 0">How it looks saved to a home screen</p></div></div>`}
-      <div class="urlbox">${esc(l.u)}</div>
+      <div class="urlbox">${l.u.startsWith('http')?`<a href="${esc(l.u)}" target="_blank" rel="noopener" style="color:var(--navy)">${esc(l.u)}</a>`:esc(l.u)}</div>
       ${l.msg?`<div class="sugg"><p class="lab">Suggested message</p><p class="txt">${esc(l.msg)}</p></div>`:''}
       <div class="row" style="margin:0">
         <button class="chip" onclick="cp(${i},this)">${l.msg?'Copy message and link':'Copy link'}</button>
+        ${l.u.startsWith('http')?`<a class="chip" href="${esc(l.u)}" target="_blank" rel="noopener" style="text-decoration:none;display:inline-block">Open it</a>`:''}
         <button class="chip" onclick="alert('Generates a new link. The old one stops working immediately.')">New link</button>
         <span style="font-size:11px;color:var(--faint)">${esc(l.d)}</span>
       </div>
