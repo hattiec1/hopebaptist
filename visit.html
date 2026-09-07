@@ -99,10 +99,10 @@ var REC={
 
 (function(){
   var q=new URLSearchParams(location.search);
-  var to=q.get('to')||'there';
+  var to=q.get('to');
   var r=REC[q.get('id')]||REC[1];
   var him=r.her?'her':'him';
-  document.getElementById('hi').textContent='Hello '+to;
+  document.getElementById('hi').textContent=to?('Hello '+to):'A visit for you';
   document.getElementById('pn').textContent=r.n;
   document.getElementById('pt').textContent=r.tag;
   document.getElementById('pa').textContent=r.area;
