@@ -80,13 +80,14 @@ input:focus{border-color:var(--navy)}
 <!-- PAIRING -->
 <div class="wrap" id="pair">
   <h1>Who's going out together?</h1>
-  <p class="lede">Tap both names. You only do this once today.</p>
-  <div class="search"><span style="color:#a8a29e">&#9906;</span><input id="pq" placeholder="Find a name"></div>
-  <div class="picked" id="picked"></div>
-  <p class="err" id="perr" style="display:none">Pick both partners before starting.</p>
-  <div class="plist" id="plist"></div>
+  <p class="lede">Type your names. You only do this once today.</p>
+  <div class="f"><label>First person</label><input id="p1" placeholder="Your name" autocomplete="off"></div>
+  <div class="f"><label>Second person</label><input id="p2" placeholder="Your partner's name" autocomplete="off"></div>
+  <div class="f" id="p3wrap" style="display:none"><label>Third person</label><input id="p3" placeholder="Name" autocomplete="off"></div>
+  <button class="ghost" id="addp" onclick="addThird()" style="margin:0 0 18px">+ Add a third person</button>
+  <p class="err" id="perr" style="display:none">Both names are needed before you start.</p>
   <button class="send" onclick="start()">Start</button>
-  <p class="fine">Every person you log today is tagged to this pair.</p>
+  <p class="fine">Every person you log today is tagged to your group.</p>
 </div>
 
 <!-- CAPTURE -->
@@ -142,38 +143,26 @@ input:focus{border-color:var(--navy)}
   <h1>Saved</h1>
   <p class="lede" style="margin-bottom:22px">It'll show up on the follow-up list at the church.</p>
   <button class="send" onclick="again()">Log another</button>
-  <button class="ghost" onclick="location.reload()">Change partners</button>
+  <button class="ghost" onclick="location.reload()">Change names</button>
   <p class="proto">Prototype &#183; nothing was actually saved. &#183; <a href="./" style="color:#a8a29e">back to the portal</a></p>
 </div>
 
 <script>
-var MEMBERS=["Abena Mensah","Ama Serwaa","Comfort Boakye","Daniel Osei","Doris Ampofo","Emmanuel Tetteh","Esi Darko","Felicia Anane","Francis Owusu","Gifty Asare","Grace Nkrumah","Isaac Adjei","Joyce Amoah","Kofi Boateng","Kwabena Antwi","Kwame Danso","Mary Quartey","Michael Sarpong","Nana Yaa Addo","Patience Kyei","Paul Agyeman","Peter Nyarko","Priscilla Baffour","Rebecca Otoo","Samuel Appiah","Sarah Bediako","Solomon Larbi","Theresa Aidoo","Vida Frimpong","Yaw Opoku"];
-var picked=[],recOn=false,secs=0,timer=null;
+var recOn=false,secs=0,timer=null;
 var $=function(i){return document.getElementById(i)};
 
-function drawList(){
-  var q=$('pq').value.trim().toLowerCase();
-  var list=MEMBERS.filter(function(n){return n.toLowerCase().indexOf(q)>-1});
-  $('plist').innerHTML=list.length?list.map(function(n){
-    var on=picked.indexOf(n)>-1;
-    return '<button class="prow'+(on?' on':'')+'" onclick="pick(\''+n.replace(/'/g,"\\'")+'\')"><span>'+n+'</span>'+(on?'<span>&#10003;</span>':'')+'</button>';
-  }).join(''):'<p style="font-size:13px;color:#a8a29e;padding:14px 0">No one by that name.</p>';
-  $('picked').innerHTML=picked.map(function(n){
-    return '<button class="tagx" onclick="pick(\''+n.replace(/'/g,"\\'")+'\')">'+n+' &#10005;</button>';
-  }).join('');
+function addThird(){
+  $('p3wrap').style.display='block';
+  $('addp').style.display='none';
+  $('p3').focus();
 }
-function pick(n){
-  var i=picked.indexOf(n);
-  if(i>-1)picked.splice(i,1);
-  else if(picked.length<2)picked.push(n);
-  else picked=[picked[1],n];
-  $('perr').style.display='none'; drawList();
-}
-$('pq').oninput=drawList; drawList();
+['p1','p2'].forEach(function(i){$(i).oninput=function(){$('perr').style.display='none'}});
 
 function start(){
-  if(picked.length<2){$('perr').style.display='block';return}
-  $('who').textContent=picked.join(' & ')+' \u00b7 today';
+  var a=$('p1').value.trim(), b=$('p2').value.trim(), c=$('p3').value.trim();
+  if(!a||!b){$('perr').style.display='block';return}
+  var names=[a,b]; if(c)names.push(c);
+  $('who').textContent=names.join(' & ')+' \u00b7 today';
   $('pair').style.display='none'; $('cap').style.display='block'; window.scrollTo(0,0);
 }
 
