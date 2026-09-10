@@ -40,6 +40,12 @@ h1{font-size:21px;font-weight:600;margin:0 0 6px}
 .opt:active{background:#f5f5f4}
 .opt b{display:block;font-weight:600}
 .opt small{display:block;font-size:12px;color:var(--faint);margin-top:2px}
+.opt.on{border-color:var(--navy);background:#f0f5fb;box-shadow:inset 0 0 0 1px var(--navy)}
+textarea{width:100%;padding:11px 12px;border:1px solid #d6d3d1;border-radius:10px;font-size:14.5px;font-family:inherit;background:#fff;outline:none;resize:vertical;line-height:1.55}
+textarea:focus{border-color:var(--navy)}
+.sendbtn{width:100%;padding:14px;border:0;border-radius:10px;background:var(--navy);color:#fff;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;margin:18px 0 0}
+.sendbtn:active{background:#152a49}
+.err{font-size:13px;color:#b91c1c;margin:16px 0 0}
 .done{text-align:center;padding:56px 20px}
 .tick{width:58px;height:58px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;color:#15803d}
 .proto{font-size:11px;color:var(--faint);text-align:center;margin:30px 0 0}
@@ -74,10 +80,18 @@ h1{font-size:21px;font-weight:600;margin:0 0 6px}
   <p class="q">How did it go?</p>
   <p class="qs">Tap one when you've been. The church will see it straight away.</p>
 
-  <button class="opt" onclick="finish('visited')"><b id="o1">I visited them</b><small>The church will mark this as done</small></button>
-  <button class="opt" onclick="finish('reach')"><b id="o2">I couldn't reach them</b><small>Wrong number, or nobody home</small></button>
-  <button class="opt" onclick="finish('again')"><b>I need to go back</b><small>Started, but not finished</small></button>
-  <button class="opt" onclick="finish('someone')"><b>Someone else should go</b><small>Sends it back to the church to reassign</small></button>
+  <button class="opt" data-k="visited" onclick="pickOpt(this)"><b id="o1">I visited them</b><small>The church will mark this as done</small></button>
+  <button class="opt" data-k="reach" onclick="pickOpt(this)"><b id="o2">I couldn't reach them</b><small>Wrong number, or nobody home</small></button>
+  <button class="opt" data-k="again" onclick="pickOpt(this)"><b>I need to go back</b><small>Started, but not finished</small></button>
+  <button class="opt" data-k="someone" onclick="pickOpt(this)"><b>Someone else should go</b><small>Sends it back to the church to reassign</small></button>
+
+  <div style="margin:18px 0 0">
+    <label style="display:block;font-size:12.5px;color:var(--soft);margin:0 0 6px">Anything the church should know? <span style="color:var(--faint)">Optional</span></label>
+    <textarea id="dnote" rows="3" placeholder="Whatever you want to add"></textarea>
+  </div>
+
+  <p class="err" id="oerr" style="display:none">Choose one of the four above before sending.</p>
+  <button class="sendbtn" onclick="finish()">Send to the church</button>
 
   <p class="fine">No sign-in needed. This link only opens this one visit.</p>
   <p class="proto">Prototype &#183; Amni Circle &#183; Carlis Design Studio LLC &#183; <a href="./" style="color:#a8a29e">back to the portal</a></p>
@@ -122,9 +136,16 @@ var MSG={
  again:["Noted","It stays on the list so nobody forgets to go back."],
  someone:["Sent back","The church will assign someone else to go."]
 };
-function finish(k){
-  document.getElementById('okt').textContent=MSG[k][0];
-  document.getElementById('okm').textContent=MSG[k][1];
+var chosen=null;
+function pickOpt(b){
+  document.querySelectorAll('.opt').forEach(function(x){x.classList.remove('on')});
+  b.classList.add('on'); chosen=b.getAttribute('data-k');
+  document.getElementById('oerr').style.display='none';
+}
+function finish(){
+  if(!chosen){var e=document.getElementById('oerr');e.style.display='block';e.scrollIntoView({block:'center'});return}
+  document.getElementById('okt').textContent=MSG[chosen][0];
+  document.getElementById('okm').textContent=MSG[chosen][1];
   document.getElementById('main').style.display='none';
   document.getElementById('ok').style.display='block';
   window.scrollTo(0,0);
